@@ -1,4 +1,4 @@
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, Signal
 from PySide6.QtWidgets import (
     QWidget, QFrame, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QMessageBox
 )
@@ -66,6 +66,7 @@ class PanelPrincipalVista(QWidget):
     Muestra quién inició sesión, el espacio de los turnos del día y los
     módulos del programa. No toma decisiones: avisa al controlador de los clics.
     """
+    gestion_clientes_solicitada = Signal()
 
     def __init__(self):
         super().__init__()
@@ -229,6 +230,9 @@ class PanelPrincipalVista(QWidget):
 
     def mostrar_fecha(self, texto):
         self.__etiqueta_fecha.setText(texto)
+    
+    def abrir_gestion_clientes(self):
+        self.gestion_clientes_solicitada.emit()
 
     def mostrar_aviso(self, mensaje):
         QMessageBox.information(self, "Panel principal", mensaje)

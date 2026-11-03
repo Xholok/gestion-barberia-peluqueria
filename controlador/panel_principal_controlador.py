@@ -30,7 +30,7 @@ class PanelPrincipalControlador:
         self.vista.mostrar_aviso("El módulo de reservas estará disponible próximamente.")
 
     def abrir_modulo_clientes(self):
-        self.vista.mostrar_aviso("La pantalla Gestión de clientes se construye en el siguiente paso.")
+        self.vista.abrir_gestion_clientes()
 
     def __texto_fecha_de_hoy(self):
         hoy = date.today()
