@@ -1,8 +1,8 @@
-from PySide6.QtCore import Qt, QByteArray
+from PySide6.QtCore import Qt, QByteArray, Signal
 from PySide6.QtGui import QIcon, QPixmap, QPainter
 from PySide6.QtSvg import QSvgRenderer
 from PySide6.QtWidgets import (
-    QWidget, QFrame, QVBoxLayout, QLabel, QLineEdit, QPushButton, QMessageBox
+    QWidget, QFrame, QVBoxLayout, QLabel, QLineEdit, QPushButton
 )
 
 SVG_AVATAR = (
@@ -51,6 +51,8 @@ class LoginVista(QWidget):
     No toma decisiones por sí sola.
     """
 
+    ingreso_exitoso = Signal()
+
     TAMANO_AVATAR = 96
 
     def __init__(self):
@@ -62,7 +64,6 @@ class LoginVista(QWidget):
         self.setWindowTitle("Inicio de sesión")
         self.setFixedSize(440, 580)
 
-        # Tarjeta central donde van los campos
         self.__tarjeta = QFrame()
         self.__tarjeta.setObjectName("tarjeta")
 
@@ -183,6 +184,4 @@ class LoginVista(QWidget):
 
     def abrir_pantalla_principal(self):
         self.__campo_contrasena.clear()
-        QMessageBox.information(
-            self, "Inicio de sesión", "Inicio de sesión correcto."
-        )
+        self.ingreso_exitoso.emit()
