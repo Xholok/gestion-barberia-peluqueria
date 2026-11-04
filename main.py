@@ -2,20 +2,21 @@ import sys
 from PySide6.QtWidgets import QApplication
 
 from modelo.verificacion_login import VerificacionLogin
+from modelo.cliente_modelo import ClienteModelo
 from modelo.sesion import Sesion
 from vista.login_vista import LoginVista
 from vista.panel_principal_vista import PanelPrincipalVista
 from vista.gestion_clientes_vista import GestionClientesVista
+from vista.registro_cliente_vista import RegistroClienteVista
 from controlador.login_controlador import LoginControlador
 from controlador.panel_principal_controlador import PanelPrincipalControlador
 from controlador.gestion_clientes_controlador import GestionClientesControlador
+from controlador.cliente_controlador import ClienteControlador
 
 
 def main():
     app = QApplication(sys.argv)
-
     sesion = Sesion()
-
     ventanas = {}
 
     def abrir_panel_principal():
@@ -33,9 +34,11 @@ def main():
 
     def abrir_gestion_clientes():
         vista_gestion = GestionClientesVista()
-        controlador_gestion = GestionClientesControlador(vista_gestion)
+        controlador_gestion = GestionClientesControlador(vista_gestion, sesion)
         vista_gestion.asignar_controlador(controlador_gestion)
         vista_gestion.volver_solicitado.connect(volver_al_panel)
+        vista_gestion.registro_cliente_solicitado.connect(abrir_registro_cliente)
+        vista_gestion.inicio_sesion_solicitado.connect(pedir_inicio_sesion)
 
         ventanas["gestion_clientes"] = vista_gestion
         ventanas["controlador_gestion_clientes"] = controlador_gestion
@@ -48,6 +51,30 @@ def main():
         ventanas["panel"].setGeometry(ventanas["gestion_clientes"].geometry())
         ventanas["panel"].show()
         ventanas["gestion_clientes"].close()
+
+    def abrir_registro_cliente():
+        vista_registro = RegistroClienteVista()
+        modelo_cliente = ClienteModelo()
+        controlador_cliente = ClienteControlador(vista_registro, modelo_cliente, sesion)
+        vista_registro.asignar_controlador(controlador_cliente)
+        vista_registro.volver_solicitado.connect(volver_a_gestion_clientes)
+
+        ventanas["registro_cliente"] = vista_registro
+        ventanas["controlador_cliente"] = controlador_cliente
+
+        vista_registro.setGeometry(ventanas["gestion_clientes"].geometry())
+        vista_registro.show()
+        ventanas["gestion_clientes"].hide()
+
+    def volver_a_gestion_clientes():
+        ventanas["gestion_clientes"].setGeometry(ventanas["registro_cliente"].geometry())
+        ventanas["gestion_clientes"].show()
+        ventanas["registro_cliente"].close()
+
+    def pedir_inicio_sesion():
+        ventanas["login"].show()
+        ventanas["gestion_clientes"].close()
+        ventanas["panel"].close()
 
     vista_login = LoginVista()
     modelo = VerificacionLogin()

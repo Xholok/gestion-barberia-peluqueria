@@ -92,6 +92,8 @@ class GestionClientesVista(QWidget):
     """
 
     volver_solicitado = Signal()
+    registro_cliente_solicitado = Signal()
+    inicio_sesion_solicitado = Signal()
 
     def __init__(self):
         super().__init__()
@@ -206,6 +208,12 @@ class GestionClientesVista(QWidget):
 
     def volver_al_panel(self):
         self.volver_solicitado.emit()
+
+    def abrir_formulario_registro(self):
+        self.registro_cliente_solicitado.emit()
+
+    def solicitar_inicio_sesion(self):
+        self.inicio_sesion_solicitado.emit()
 
     def mostrar_aviso(self, mensaje):
         QMessageBox.information(self, "Gestión de clientes", mensaje)
