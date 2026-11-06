@@ -145,3 +145,57 @@ class ClienteModelo:
             "vinculado_a_usuario": vinculado_a_usuario
         }
         return resultado
+
+    def listar_clientes(self, texto_busqueda, limite):
+        """
+        Devuelve una lista de clientes (cada uno con nombre y teléfono).
+        Si texto_busqueda está vacío, trae los registrados más recientemente.
+        Si tiene texto, trae los clientes cuyo nombre (o alguna de sus palabras)
+        empieza por ese texto, o cuyo teléfono empieza por ese texto.
+        No distingue mayúsculas ni tildes: "jose" encuentra a "José".
+        """
+        texto_busqueda = texto_busqueda.strip()
+
+        consulta = (
+            "SELECT p.nombres, p.apellidos, p.telefono "
+            "FROM cliente c "
+            "INNER JOIN persona p ON p.id_persona = c.id_persona "
+        )
+        parametros = []
+
+        if texto_busqueda != "":
+            texto_seguro = texto_busqueda.replace("\\", "\\\\")
+            texto_seguro = texto_seguro.replace("%", "\\%").replace("_", "\\_")
+            consulta = consulta + (
+                "WHERE CONCAT_WS(' ', p.nombres, p.apellidos) LIKE %s "
+                "OR CONCAT_WS(' ', p.nombres, p.apellidos) LIKE %s "
+                "OR p.telefono LIKE %s "
+            )
+            parametros = [texto_seguro + "%", "% " + texto_seguro + "%", texto_seguro + "%"]
+
+        consulta = consulta + "ORDER BY c.fecha_registro DESC, c.id_cliente DESC LIMIT %s"
+        parametros.append(limite)
+
+        try:
+            conexion = mysql.connector.connect(
+                host="127.0.0.1",
+                user="root",
+                password="",
+                database="barberia"
+            )
+            cursor = conexion.cursor()
+            cursor.execute(consulta, tuple(parametros))
+            filas = cursor.fetchall()
+            cursor.close()
+            conexion.close()
+        except mysql.connector.Error:
+            raise ConnectionError("No se pudo acceder a la base de datos")
+
+        clientes = []
+        for fila in filas:
+            if fila[1] is None:
+                nombre_completo = fila[0]
+            else:
+                nombre_completo = fila[0] + " " + fila[1]
+            clientes.append({"nombre": nombre_completo, "telefono": fila[2]})
+        return clientes

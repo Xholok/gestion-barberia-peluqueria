@@ -8,15 +8,19 @@ from vista.login_vista import LoginVista
 from vista.panel_principal_vista import PanelPrincipalVista
 from vista.gestion_clientes_vista import GestionClientesVista
 from vista.registro_cliente_vista import RegistroClienteVista
+from vista.lista_clientes_vista import ListaClientesVista
 from controlador.login_controlador import LoginControlador
 from controlador.panel_principal_controlador import PanelPrincipalControlador
 from controlador.gestion_clientes_controlador import GestionClientesControlador
 from controlador.cliente_controlador import ClienteControlador
+from controlador.lista_clientes_controlador import ListaClientesControlador
 
 
 def main():
     app = QApplication(sys.argv)
+
     sesion = Sesion()
+
     ventanas = {}
 
     def abrir_panel_principal():
@@ -39,6 +43,7 @@ def main():
         vista_gestion.volver_solicitado.connect(volver_al_panel)
         vista_gestion.registro_cliente_solicitado.connect(abrir_registro_cliente)
         vista_gestion.inicio_sesion_solicitado.connect(pedir_inicio_sesion)
+        vista_gestion.lista_clientes_solicitada.connect(abrir_lista_clientes)
 
         ventanas["gestion_clientes"] = vista_gestion
         ventanas["controlador_gestion_clientes"] = controlador_gestion
@@ -71,6 +76,25 @@ def main():
         ventanas["gestion_clientes"].show()
         ventanas["registro_cliente"].close()
 
+    def abrir_lista_clientes():
+        vista_lista = ListaClientesVista()
+        controlador_lista = ListaClientesControlador(vista_lista, ClienteModelo())
+        vista_lista.asignar_controlador(controlador_lista)
+        vista_lista.volver_solicitado.connect(volver_de_lista_clientes)
+
+        ventanas["lista_clientes"] = vista_lista
+        ventanas["controlador_lista_clientes"] = controlador_lista
+
+        vista_lista.setGeometry(ventanas["gestion_clientes"].geometry())
+        controlador_lista.mostrar_recientes()
+        vista_lista.show()
+        ventanas["gestion_clientes"].hide()
+
+    def volver_de_lista_clientes():
+        ventanas["gestion_clientes"].setGeometry(ventanas["lista_clientes"].geometry())
+        ventanas["gestion_clientes"].show()
+        ventanas["lista_clientes"].close()
+
     def pedir_inicio_sesion():
         ventanas["login"].show()
         ventanas["gestion_clientes"].close()
@@ -87,7 +111,6 @@ def main():
 
     vista_login.show()
     sys.exit(app.exec())
-
 
 if __name__ == "__main__":
     main()

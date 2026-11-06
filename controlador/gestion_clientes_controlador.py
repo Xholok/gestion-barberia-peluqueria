@@ -24,5 +24,11 @@ class GestionClientesControlador:
 
         self.vista.abrir_formulario_registro()
 
+    def abrir_lista_clientes(self):
+        if not self.sesion.hay_sesion_iniciada():
+            self.vista.solicitar_inicio_sesion()
+            return
+        self.vista.abrir_lista()
+
     def volver_al_panel(self):
         self.vista.volver_al_panel()

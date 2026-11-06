@@ -90,6 +90,16 @@ class VistaFalsa:
     def abrir_gestion_clientes(self):
         self.acciones.append("abrir_gestion_clientes")
 
+    # Lista de clientes
+    def abrir_lista(self):
+        self.acciones.append("abrir_lista")
+
+    def mostrar_clientes(self, clientes):
+        self.clientes_mostrados = clientes
+
+    def mostrar_estado(self, mensaje):
+        self.estado = mensaje
+
 
 class ClienteModeloFalso:
     """
@@ -98,8 +108,10 @@ class ClienteModeloFalso:
     error_al_buscar / error_al_guardar: excepción que se lanza a propósito.
     """
 
-    def __init__(self, telefonos=None, error_al_buscar=None, error_al_guardar=None):
+    def __init__(self, telefonos=None, error_al_buscar=None, error_al_guardar=None, lista=None):
         self.telefonos = telefonos if telefonos is not None else {}
+        self.lista = lista if lista is not None else []
+        self.busquedas = []
         self.error_al_buscar = error_al_buscar
         self.error_al_guardar = error_al_guardar
         self.guardados = []
@@ -108,6 +120,12 @@ class ClienteModeloFalso:
         if self.error_al_buscar is not None:
             raise self.error_al_buscar
         return self.telefonos.get(telefono)
+
+    def listar_clientes(self, texto_busqueda, limite):
+        if self.error_al_buscar is not None:
+            raise self.error_al_buscar
+        self.busquedas.append((texto_busqueda, limite))
+        return self.lista[:limite]
 
     def guardar_cliente(self, nombre, telefono, usa_whatsapp, observaciones,
                         autoriza_datos, id_usuario_registro):

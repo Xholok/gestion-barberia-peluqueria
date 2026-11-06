@@ -88,12 +88,13 @@ class GestionClientesVista(QWidget):
     Clase: GestionClientesVista
     Descripción: Es la pantalla del módulo de clientes. Muestra las opciones
     (registrar, eliminar, modificar y buscar) y un botón para volver al panel.
-    Por ahora solo está habilitada la opción de registrar cliente.
+    Por ahora están habilitadas registrar cliente y buscar / ver la lista.
     """
 
     volver_solicitado = Signal()
     registro_cliente_solicitado = Signal()
     inicio_sesion_solicitado = Signal()
+    lista_clientes_solicitada = Signal()
 
     def __init__(self):
         super().__init__()
@@ -125,7 +126,7 @@ class GestionClientesVista(QWidget):
             SVG_MODIFICAR, "Modificar cliente", "Próximamente", False
         )
         self.__tarjeta_buscar = TarjetaOpcion(
-            SVG_BUSCAR, "Buscar cliente / ver lista", "Próximamente", False
+            SVG_BUSCAR, "Buscar cliente / ver lista", "Ver los clientes registrados", True
         )
 
         fila_opciones = QHBoxLayout()
@@ -153,6 +154,7 @@ class GestionClientesVista(QWidget):
 
         boton_volver.clicked.connect(self.__al_presionar_volver)
         self.__tarjeta_registrar.clicked.connect(self.__al_presionar_registrar)
+        self.__tarjeta_buscar.clicked.connect(self.__al_presionar_buscar)
 
     def __aplicar_estilo(self):
         self.setStyleSheet("""
@@ -206,6 +208,9 @@ class GestionClientesVista(QWidget):
     def __al_presionar_registrar(self):
         self.__controlador.abrir_registro_cliente()
 
+    def __al_presionar_buscar(self):
+        self.__controlador.abrir_lista_clientes()
+
     def volver_al_panel(self):
         self.volver_solicitado.emit()
 
@@ -214,6 +219,9 @@ class GestionClientesVista(QWidget):
 
     def solicitar_inicio_sesion(self):
         self.inicio_sesion_solicitado.emit()
+
+    def abrir_lista(self):
+        self.lista_clientes_solicitada.emit()
 
     def mostrar_aviso(self, mensaje):
         QMessageBox.information(self, "Gestión de clientes", mensaje)

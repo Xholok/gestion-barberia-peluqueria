@@ -31,6 +31,31 @@ class PruebasClienteModelo(unittest.TestCase):
             with self.assertRaises(ConnectionError):
                 self.modelo.guardar_cliente("Pedro", "3157778899", True, None, True, 1)
 
+    def test_busqueda_escapa_porcentaje_y_guion_bajo(self):
+        # Se revisan los parámetros que el modelo le manda a MySQL, sin MySQL real
+        conexion = mock.MagicMock()
+        cursor = conexion.cursor.return_value
+        cursor.fetchall.return_value = []
+        with mock.patch("mysql.connector.connect", return_value=conexion):
+            self.modelo.listar_clientes(" 50%_ ", 50)
+        parametros = cursor.execute.call_args[0][1]
+        self.assertEqual(parametros, ("50\\%\\_%", "% 50\\%\\_%", "50\\%\\_%", 50))
+
+    def test_lista_une_nombres_y_apellidos(self):
+        conexion = mock.MagicMock()
+        cursor = conexion.cursor.return_value
+        cursor.fetchall.return_value = [("Ivan", "David", "3103356105"), ("Ana", None, "3001110001")]
+        with mock.patch("mysql.connector.connect", return_value=conexion):
+            clientes = self.modelo.listar_clientes("", 50)
+        self.assertEqual(clientes[0], {"nombre": "Ivan David", "telefono": "3103356105"})
+        self.assertEqual(clientes[1]["nombre"], "Ana")
+
+    def test_base_de_datos_apagada_al_listar(self):
+        falla = mysql.connector.Error("MySQL apagado")
+        with mock.patch("mysql.connector.connect", side_effect=falla):
+            with self.assertRaises(ConnectionError):
+                self.modelo.listar_clientes("", 50)
+
 
 if __name__ == "__main__":
     unittest.main()

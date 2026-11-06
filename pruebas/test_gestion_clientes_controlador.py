@@ -26,6 +26,16 @@ class PruebasGestionClientesControlador(unittest.TestCase):
         self.assertEqual(vista.acciones, [])
         self.assertIn("Acceso denegado", vista.avisos[0])
 
+    def test_ver_lista_con_sesion(self):
+        vista = VistaFalsa()
+        GestionClientesControlador(vista, SesionFalsa()).abrir_lista_clientes()
+        self.assertEqual(vista.acciones, ["abrir_lista"])
+
+    def test_ver_lista_sin_sesion_pide_iniciar_sesion(self):
+        vista = VistaFalsa()
+        GestionClientesControlador(vista, SesionFalsa(id_usuario=None)).abrir_lista_clientes()
+        self.assertEqual(vista.acciones, ["solicitar_inicio_sesion"])
+
     def test_volver_al_panel(self):
         vista = VistaFalsa()
         GestionClientesControlador(vista, SesionFalsa()).volver_al_panel()
