@@ -20,7 +20,8 @@ class VerificacionLogin:
                 host="127.0.0.1",
                 user="root",
                 password="",
-                database="barberia"
+                database="barberia",
+                use_pure=True
             )
             cursor = conexion.cursor()
 
@@ -42,7 +43,6 @@ class VerificacionLogin:
         if fila is None:
             return None
 
-        # Los apellidos pueden estar vacíos, por eso se revisa antes de unirlos
         if fila[2] is None:
             nombre_completo = fila[1]
         else:

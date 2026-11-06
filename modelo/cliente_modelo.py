@@ -36,7 +36,8 @@ class ClienteModelo:
                 host="127.0.0.1",
                 user="root",
                 password="",
-                database="barberia"
+                database="barberia",
+                use_pure=True
             )
             cursor = conexion.cursor()
 
@@ -81,7 +82,8 @@ class ClienteModelo:
                 host="127.0.0.1",
                 user="root",
                 password="",
-                database="barberia"
+                database="barberia",
+                use_pure=True
             )
             cursor = conexion.cursor()
 
@@ -181,7 +183,8 @@ class ClienteModelo:
                 host="127.0.0.1",
                 user="root",
                 password="",
-                database="barberia"
+                database="barberia",
+                use_pure=True
             )
             cursor = conexion.cursor()
             cursor.execute(consulta, tuple(parametros))
